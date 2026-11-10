@@ -4,11 +4,12 @@ import MainLayout from './components/layout/MainLayout'
 import SeleccionBolsin from './components/pasos/SeleccionBolsin'
 import ContenidoBolsin from './components/pasos/ContenidoBolsin'
 import OpcionRecepcion from './components/pasos/OpcionRecepcion'
+import SeleccionDocumentacion from './components/pasos/SeleccionDocumentacion'
 import Confirmacion from './components/pasos/Confirmacion'
 import Resultado from './components/pasos/Resultado'
 import {
-  mensajeDeError, opcRegistrarRecepcionBolsin, tomarConfirmacionRegistro,
-  tomarSeleccionBolsin, tomarSeleccionOpcionRecepcion,
+  mensajeDeError, opcRegistrarRecepcionBolsin, tomarConfirmacionRegistro, tomarSeleccionBolsin,
+  tomarSeleccionDocumentacion, tomarSeleccionOpcionRecepcion,
 } from './services/api'
 import theme from './theme'
 
@@ -24,6 +25,8 @@ export default function App() {
   const [opcion, setOpcion] = useState('')
   const [mensaje, setMensaje] = useState('')
   const [exito, setExito] = useState(false)
+  const [marcarDocumentacion, setMarcarDocumentacion] = useState(false)
+  const [marcadas, setMarcadas] = useState([])
 
   // Envuelve cada llamado: muestra la espera y el mensaje de error que devuelve el back.
   const ejecutar = useCallback(async (llamado) => {
@@ -43,6 +46,8 @@ export default function App() {
     const datos = await opcRegistrarRecepcionBolsin()
     setNombreCM(datos.nombreCM)
     setBolsines(datos.bolsines)
+    setMarcarDocumentacion(false)
+    setMarcadas([])
     setPaso(0)
   }), [ejecutar])
 
@@ -54,10 +59,22 @@ export default function App() {
     setPaso(1)
   })
 
+  // Si la pantalla pide marcar documentación (A3 o A4), se queda en este paso.
   const elegirOpcion = (opcionElegida) => ejecutar(async () => {
     const respuesta = await tomarSeleccionOpcionRecepcion(opcionElegida)
     setOpcion(opcionElegida)
     setMensaje(respuesta.mensaje)
+    setMarcadas([])
+    setMarcarDocumentacion(respuesta.seleccionarDocumentacion)
+    if (!respuesta.seleccionarDocumentacion) setPaso(3)
+  })
+
+  // A3 y A4: tomarSeleccionDocumentacion(nrosDocumentacion).
+  const seleccionarDocumentacion = (nros) => ejecutar(async () => {
+    const respuesta = await tomarSeleccionDocumentacion(nros)
+    setMensaje(respuesta.mensaje)
+    setMarcadas(seleccion.remitos.flatMap((r) => r.documentacion)
+      .filter((d) => nros.includes(d.nroDocumentacion)).map((d) => d.asunto))
     setPaso(3)
   })
 
@@ -71,8 +88,12 @@ export default function App() {
   const pasos = [
     <SeleccionBolsin key="seleccion" bolsines={bolsines} onSeleccionar={seleccionarBolsin} />,
     <ContenidoBolsin key="contenido" nroPrecinto={nroPrecinto} remitos={seleccion.remitos} onContinuar={() => setPaso(2)} />,
-    <OpcionRecepcion key="opcion" opciones={seleccion.opciones} onElegir={elegirOpcion} />,
-    <Confirmacion key="confirmacion" mensaje={mensaje} nroPrecinto={nroPrecinto} opcion={opcion} onConfirmar={confirmar} />,
+    marcarDocumentacion
+      ? <SeleccionDocumentacion key="documentacion" mensaje={mensaje} remitos={seleccion.remitos}
+          onSeleccionar={seleccionarDocumentacion} onVolver={() => setMarcarDocumentacion(false)} />
+      : <OpcionRecepcion key="opcion" opciones={seleccion.opciones} onElegir={elegirOpcion} />,
+    <Confirmacion key="confirmacion" mensaje={mensaje} nroPrecinto={nroPrecinto} opcion={opcion}
+      marcadas={marcadas} onConfirmar={confirmar} />,
     <Resultado key="resultado" mensaje={mensaje} exito={exito} onReiniciar={iniciar} />,
   ]
 

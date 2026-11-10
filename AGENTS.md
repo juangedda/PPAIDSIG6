@@ -26,6 +26,20 @@ salen de las consignas, de los apuntes de la cátedra y de los ejemplos que dio 
    (`setFechaHoraFin`), crea el estado siguiente y el nuevo CambioEstadoDocumentacion con el
    empleado responsable, y se los asigna a la documentación (`setEstado`, `agregarCE`).
 
+## Situación actual (pendiente de acuerdo del grupo)
+
+Las reglas 1 y 7 de arriba se conservaron como estaban en el repositorio inicial del grupo.
+
+- **Regla 1:** en la implementación posterior se agregaron mensajes y parámetros para A3,
+  A4, A5 y CU 29 sin cambiar los diagramas definitivos. Las diferencias se anotaron en
+  `docs/diferencias_codigo_diagramas.md`, pero esto no reemplaza la regla original.
+  Falta acordar con el grupo y la tutora cómo resolver o presentar esa diferencia.
+- **Regla 7:** el código inicial ya tenía sólo las cuatro operaciones del CU 28 en
+  `EstadoDocumentacion`; el diagrama también muestra otras de distintos CU.
+  Sigue pendiente decidir si deben declararse aunque esos CU no se implementen.
+
+La documentación de estas diferencias no implica que estén aprobadas.
+
 ## Código
 9. 100 % orientado a objetos, corto y sin repeticiones: nada de archivos largos para lo que se
    resuelve en pocas líneas.

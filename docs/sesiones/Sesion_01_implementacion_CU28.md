@@ -2,6 +2,16 @@
 
 PPAI DSI 2026 · 3K5 · Grupo 06 · Fecha: 09/11/2026
 
+> **Nota (10/11/2026).** Este documento registra el estado al 09/11. Desde entonces cambiaron:
+> - las firmas de los mensajes 46 a 52 (`actualizarEstado` y `actualizarDocumentacion` reciben la
+>   documentación marcada en A3, A4 y A5);
+> - el mensaje 66 (el CU 29 ahora recibe una `NotificacionRecepcionBolsin` por cada CM de origen);
+> - `save` pasó a `saveAndFlush`;
+> - las pruebas (ahora son 24).
+>
+> Las diferencias vigentes están en `docs/diferencias_codigo_diagramas.md` y el estado actual, en
+> `CONTEXTO_IA.md`. `CONTEXTO_IA.pdf` ya no existe, y `PENDIENTE.txt` está en la raíz.
+
 Este documento explica qué se construyó en esta sesión, cómo funciona cada parte del código y a
 qué mensaje del diagrama de secuencia (`docs/diagramas/SECUENCIA PATRON.pdf`) corresponde cada
 línea importante. Sirve para estudiar para la defensa.

@@ -1,10 +1,11 @@
 package ppai.bolsines.notificacion;
 
 /**
- * CU 29 Notificar recepción de bolsín (incluido en el CU 28). Es el componente que pide el RNF 5:
- * el gestor depende de esta interfaz y la implementación se puede cambiar (log, Gmail, Outlook).
+ * Interfaz usada para la notificación de recepción del CU 29.
+ * El Gestor depende de esta interfaz y no de una forma concreta de enviar avisos.
+ * En esta implementación, la notificación se muestra en el log del backend.
  */
 public interface InterfazNotificacionBolsin {
 
-    void notificarRecepcionBolsin(String emailCMOrigen, int nroPrecinto, String nombreCMDestino);
+    void notificarRecepcionBolsin(NotificacionRecepcionBolsin notificacion);
 }

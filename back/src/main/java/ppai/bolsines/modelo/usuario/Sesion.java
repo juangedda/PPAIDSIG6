@@ -10,8 +10,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sesión del usuario logueado. El CU no incluye iniciar sesión: la sesión activa (sin
- * fechaHoraFin) viene cargada en data.sql.
+ * Sesión del modelo de dominio. En la secuencia aparece como Activa:Sesion.
+ * El CU 28 usa la sesión vigente para conocer quién está registrando la recepción.
+ * La demo deja esa sesión cargada en la base; no se implementó el inicio de sesión.
  */
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,6 +27,7 @@ public class Sesion {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
+    /** En la secuencia: Gestor -> Activa:Sesion getUsuario(): Usuario, que a su vez envía getUsuario() a :Usuario. */
     public Usuario getUsuario() {
         return usuario.getUsuario();
     }

@@ -1,10 +1,24 @@
 # Contexto del proyecto para seguir trabajando (grupo e IA)
 
-**PPAI DSI 2026 "Bolsines" · UTN FRC · 3K5 · Grupo 06 · Estado al 09/11/2026**
+**PPAI DSI 2026 "Bolsines" · UTN FRC · 3K5 · Grupo 06 · Estado al 10/11/2026**
+
+> **Resumen del estado:** el CU 28 está completo: flujo descripto, los seis alternativos A1 a A6
+> y el CU 29 con la situación de la documentación. Hay 25 pruebas y todas pasan. La revisión técnica y el rediseño visual están terminados. Falta:
+> - el PDF de la Entrega 2, sin el apartado de UX por comunicado docente;
+> - validar con la tutora las decisiones de `docs/decisiones_para_la_tutora.md`;
+> - acordar cómo integrar la rama `cierre-cu28` al repositorio del grupo.
 
 Este archivo resume todo lo necesario para retomar el trabajo desde donde quedó. Está escrito
 para que cualquier integrante se lo pase a una IA (Claude, ChatGPT, Copilot, Cursor) junto con la
 carpeta del proyecto, y la IA siga con las mismas reglas y decisiones.
+
+---
+
+**Antes de cambiar algo:** las reglas originales del grupo están en `AGENTS.md`.
+Las reglas 1 y 7 no se consideran reemplazadas por el hecho de haber documentado diferencias.
+Los diagramas definitivos se conservaron, pero los mensajes y parámetros agregados deben
+ser revisados con el grupo. La guía `GUIA_CAMBIOS_DEL_PROYECTO.md` explica qué trabajo
+ya existía y qué se agregó posteriormente.
 
 ---
 
@@ -15,18 +29,20 @@ carpeta del proyecto, y la IA siga con las mismas reglas y decisiones.
 2. Abrí una conversación con la IA y adjuntá o dejá que lea:
    - este archivo (`CONTEXTO_IA.md`);
    - `AGENTS.md` (reglas del proyecto);
-   - `docs/PENDIENTE.txt` (plan de trabajo);
+   - `PENDIENTE.txt` (plan de trabajo, en la raíz);
    - `docs/sesiones/Sesion_01_implementacion_CU28.md`, que tiene la tabla mensaje por mensaje
-     del diagrama de secuencia contra el código.
+     del diagrama de secuencia contra el código, y las sesiones 02 a 06 (A3, A4, A5, CU 29 y
+     auditoría);
+   - `docs/diferencias_codigo_diagramas.md` y `docs/decisiones_para_la_tutora.md`.
 3. Pegá este mensaje inicial y completá la tarea:
 
 ```
 Sos mi asistente para el PPAI de Diseño de Sistemas de Información (UTN FRC 2026, caso
-"Bolsines"). Antes de hacer nada, leé CONTEXTO_IA.md, AGENTS.md, docs/PENDIENTE.txt y
-docs/sesiones/Sesion_01_implementacion_CU28.md, y respetá todas las reglas que figuran ahí
-(sobre todo: el código sigue a los diagramas y los diagramas NO se cambian; todo en español;
-100 % orientado a objetos; código corto y sin repeticiones).
-Tarea de hoy: <describir la tarea, por ejemplo "implementar el flujo alternativo A3">.
+"Bolsines"). Antes de hacer nada, leé CONTEXTO_IA.md, AGENTS.md, PENDIENTE.txt,
+docs/diferencias_codigo_diagramas.md y docs/sesiones/, y respetá todas las reglas que figuran ahí
+(sobre todo: los diagramas originales NO se modifican y toda diferencia se documenta; todo en
+español; 100 % orientado a objetos; código corto y sin repeticiones).
+Tarea de hoy: <describir la revisión o el cambio concreto que se necesita>.
 Antes de escribir código, decime qué archivos vas a tocar y por qué.
 ```
 
@@ -53,10 +69,11 @@ Igual conviene decirle que lea este archivo.
      - la **consistencia con el modelado** (pantalla, gestor, entidades, patrón);
      - la **persistencia en base de datos**;
      - la defensa oral mostrando el patrón en el código.
-  3. UX: moodboard, mapa de empatía y user journey de la Persona del Encargado de Bolsines
-     (EB), y diseño de las interfaces con patrones de GUI.
-  4. PDF de la entrega: `PPAI2026_3K5_G06_E2_Diseño.pdf`, con carátula completa. El código no
-     se sube: se defiende.
+  3. ~~UX: moodboard, mapa de empatía, user journey y patrones de GUI.~~ **No aplica a la
+     Entrega 2**, por comunicado docente: "Para la 2da entrega del PPAI no se pedirá el apartado
+     correspondiente a Diseño de experiencia de usuario". Se mejoró el frontend sin cambiar la lógica del CU.
+  4. PDF de la entrega: `PPAI2026_3K5_G06_E2_Diseño.pdf`, con carátula completa y **sin
+     apartado de UX**. El código no se sube: se defiende.
 - **Fuentes de la cátedra:** `docs/catedra/`. Ahí están la ERS v1.2 (con el CU 28 completo en
   4.1), la descripción del caso, las consignas, las consignas de UX y el modelo de dominio.
 
@@ -91,11 +108,13 @@ Igual conviene decirle que lea este archivo.
 
 ## 2. Reglas del equipo (no negociables)
 
-1. **El código sigue a los diagramas; los diagramas NO se cambian.** Son una entrega pasada con
-   correcciones encima. Cada mensaje del diagrama de secuencia
-   (`docs/diagramas/SECUENCIA PATRON.pdf`) tiene que existir en el código con el mismo nombre,
-   los mismos parámetros y el mismo emisor y receptor. Las pocas excepciones están
-   justificadas en la sección 8.
+1. **Los diagramas definitivos no se modifican.** El código debe poder contrastarse con ellos;
+   las diferencias se registran y deben justificarse, no ocultarse. Son una entrega
+   pasada con correcciones encima. Los mensajes del flujo descripto se contrastan con
+   `docs/diagramas/SECUENCIA PATRON.pdf`. Hay diferencias de nombres, firmas y emisores
+   entre los diagramas y el código. Además, A3, A4, A5 y CU 29 incorporaron mensajes nuevos.
+   Todo eso se detalla en `docs/diferencias_codigo_diagramas.md` y queda para revisar con
+   la tutora. No debe presentarse como una coincidencia exacta.
 2. Convenciones de la cátedra:
    - Pantalla = «boundary»;
    - Gestor = «control», que es una Fabricación Pura;
@@ -126,7 +145,7 @@ Detalle completo: `AGENTS.md`.
 | Back | Java 21 · Spring Boot 4.1.1 · Spring Data JPA / Hibernate 7 · Lombok · Maven (wrapper `mvnw`) |
 | Base de datos | H2 en modo archivo (`back/data/bolsines.mv.db`). Se recrea en cada arranque desde `data.sql` |
 | Front | React 19 · Vite 7 · Material UI 7 · Axios. Proxy de `/api` a `:8080` |
-| Pruebas | JUnit + Mockito (`EstadoDocumentacionTest`, 8 pruebas del patrón State) |
+| Pruebas | JUnit + Mockito + Spring Boot Test: 25 pruebas (State, DTO, texto del CU 29 y 14 de integración del CU completo contra una H2 en memoria) |
 
 **Requisitos:** JDK **21** y Node.js 22 LTS. El paso a paso completo para una computadora
 nueva (instalación, prueba del CU, consola H2 y problemas comunes) está en
@@ -139,7 +158,7 @@ cd back
 
 # Front (otra terminal) -> http://localhost:3000
 cd front
-npm install
+npm ci
 npm run dev
 ```
 
@@ -183,14 +202,19 @@ back/src/main/java/ppai/bolsines/
 │   └── documentacion/   Documentacion (contexto State), EstadoDocumentacion (abstracta),
 │                        9 estados concretos, CambioEstadoDocumentacion, TipoDocumento,
 │                        EstadoDocumentacionConverter
-├── notificacion/  InterfazNotificacionBolsin + NotificacionBolsinLog (CU 29, por ahora al log)
+├── notificacion/  CU 29: InterfazNotificacionBolsin, NotificacionRecepcionBolsin (record con lo que se
+│                  le notifica a UNA CM de origen) y NotificacionBolsinLog (redacta el correo en el log)
 ├── repositorio/   Spring Data JPA
 ├── dto/           records ...Request / ...Response
 └── config/        bean Clock
 back/src/main/resources/  application.properties, data.sql
+back/src/test/resources/  fixtures aislados: datos-cmc.sql (A5), datos-varios-origenes.sql (CU 29)
 front/src/                App.jsx (wizard de 5 pasos), services/api.js (una función por mensaje),
-                          components/pasos/*.jsx, components/layout/MainLayout.jsx
-docs/                     catedra/, diagramas/, sesiones/, PENDIENTE.txt
+                          components/pasos/*.jsx (SeleccionDocumentacion.jsx para A3/A4/A5),
+                          components/layout/MainLayout.jsx
+docs/                     catedra/, diagramas/, sesiones/, diferencias_codigo_diagramas.md,
+                          decisiones_para_la_tutora.md
+(raíz)                    PENDIENTE.txt, COMO_EJECUTAR.txt, GUIA_DEMOSTRACION.md
 ```
 
 ### Cómo viaja un mensaje (igual que en el diagrama)
@@ -208,9 +232,11 @@ Detalles de esta forma de comunicación:
   dos beans que se necesitan en el constructor. Por eso el Gestor recibe la Pantalla con
   `@Lazy`. `back/lombok.config` hace que Lombok copie ese `@Lazy` al constructor.
 - **Concurrencia.** La Pantalla y el Gestor guardan estado entre pedidos: es una pantalla para
-  un EB. Por eso los 4 endpoints de la Pantalla son `synchronized`. Sin eso, dos pedidos
+  un EB. Por eso los 5 endpoints de la Pantalla son `synchronized`. Sin eso, dos pedidos
   simultáneos se mezclaban. Pasaba, por ejemplo, con React en modo desarrollo, que llama dos
   veces al abrir, y la lista de bolsines aparecía vacía. **No sacar el `synchronized`.**
+  (Es una pantalla para un EB: dos navegadores a la vez comparten el mismo estado. Ver la
+  decisión 14 en `docs/decisiones_para_la_tutora.md`.)
 
 La tabla completa de los 68 mensajes del diagrama, cada uno con su línea de código, está en
 `docs/sesiones/Sesion_01_implementacion_CU28.md`.
@@ -237,12 +263,25 @@ La tabla completa de los 68 mensajes del diagrama, cada uno con su línea de có
   sólo las transiciones que salen de él:
   - `EnBolsinEnviado` puede ir a RecibidaYAceptada, RecibidaYRechazada, NoRecibida o
     ParaRedirigir;
-  - `ParaRedirigir` puede ir a RecibidaYAceptada o RecibidaYRechazada.
+  - `ParaRedirigir` puede ir a RecibidaYAceptada o RecibidaYRechazada;
+  - `RecibidaYRechazada` puede ir a ParaRedirigir (`redirigir`), como en la máquina de estados.
 - **Persistencia del estado:** se guarda el **nombre** del estado en una columna (por ejemplo
   `EnBolsinEnviado`). `EstadoDocumentacionConverter` (JPA `AttributeConverter`) recrea el
   objeto concreto al leer.
-- **Lo que ya está listo para A3, A4 y A5:** las 4 transiciones del CU 28 ya están
-  implementadas y probadas, aunque hoy el flujo sólo usa `recibirYAceptar`.
+- **Quién elige la transición:** `DetalleRemito.actualizarDocumentacion(...)` (Experto), según lo
+  que marcó el EB:
+
+  | Flujo | Transición |
+  |---|---|
+  | Flujo descripto | `recibirYAceptar` |
+  | A3 | `registrarNoRecibida` |
+  | A4 | `recibirYRechazar` |
+  | A5 | `redirigir` |
+
+  No hay ningún `if` sobre nombres de estado.
+- **Pendiente de decisión:** el diagrama de clases declara 9 operaciones más, de otros CU
+  (`darDeBaja`, `enviar`, `incluirEnBolsin`, ...), que el código no tiene. Ver
+  `docs/decisiones_para_la_tutora.md`, punto 10.
 
 ---
 
@@ -263,37 +302,43 @@ La tabla completa de los 68 mensajes del diagrama, cada uno con su línea de có
   | 104 | 5004 | Central → Rosario | Enviado | No aparece: es de otra CM |
   | 105 | 5005 | Mendoza → Córdoba | Enviado | Remito 1006 |
 
-- **Estados de remito:** ya existe `RecibidoYAceptadoParcial`, que hace falta para A3.
-- **Al reiniciar el back, los datos vuelven al estado inicial.**
+- **Estados de remito:** RecibidoYAceptado (id 4) y RecibidoYAceptadoParcial (id 5).
+- **Al reiniciar el back, los datos vuelven al estado inicial.** Para mostrar la persistencia
+  entre reinicios, ver `GUIA_DEMOSTRACION.md`.
+- **Fixtures aislados** (`back/src/test/resources`). No forman parte de la demo; los cargan las
+  pruebas con `@Sql`:
+  - `datos-cmc.sql` (A5): la EB pasa a ser Ana Ruiz (CMC) y aparece el bolsín **5006** (Córdoba →
+    Central). La documentación 10 y 12 tienen área de la CMC; la 11, no. Para la demo se carga por
+    argumento (Parte 2 de la guía).
+  - `datos-varios-origenes.sql` (CU 29): agrega al 5001 un remito de Rosario con la documentación
+    13.
 
 ---
 
 ## 7. Estado actual (qué funciona y está verificado)
 
-- [x] Flujo descripto completo, back y front, con persistencia.
-- [x] **A1/A2**: filtro sin resultados, resuelto en el front.
-- [x] **A6**: no confirma; no modifica nada.
-- [x] CU 29 detrás de `InterfazNotificacionBolsin`. Escribe en el log
-  `CU 29 - Correo a ...`.
-- [x] Las 8 pruebas del State pasan.
-- [x] Código alineado mensaje por mensaje con `SECUENCIA PATRON.pdf`.
-- [x] Probado en la PC el 09/11, con el back y el front reales: se recibieron los 3 bolsines
-  de Córdoba uno por uno, la lista se actualizó bien y al final mostró "No hay bolsines
-  enviados". La base quedó correcta.
-- [x] Revisado en la base después de confirmar:
-  - documentación en RecibidaYAceptada, con el CambioEstado anterior cerrado y responsable;
-  - remitos en RecibidoYAceptado;
-  - bolsín en RecibidoEnCMDestino.
-- [ ] Opciones 2, 3 y 4 de recepción (A3, A4, A5). Hoy contestan 400 con "todavía no está
-  implementada".
+Todo esto se verificó el 10/11 con JDK 21, en el front, en `/h2-console` y en el log.
 
-Con el flujo descripto + A1/A2 + A6 **ya se cumple el mínimo** de la consigna (flujo descripto
-+ 2 alternativos). Implementar A3, A4 y A5 es para que "funcione todo" y para lucir el
-polimorfismo del State en la defensa.
+| Flujo | Qué hace | Detalle |
+|---|---|---|
+| Flujo descripto (opción 1) | Toda la documentación pasa a RecibidaYAceptada, los remitos a RecibidoYAceptado y el bolsín a RecibidoEnCMDestino | Historial y responsable |
+| A1 / A2 | Filtros sin resultados, en el front | Reverificados el 10/11 |
+| A3 (opción 2) | La marcada queda NoRecibida, el resto RecibidaYAceptada; el remito al que le falta algo queda RecibidoYAceptadoParcial | Sesión 02 |
+| A4 (opción 3) | La marcada queda RecibidaYRechazada, el resto RecibidaYAceptada; su remito queda parcial (*provisional*) | Sesión 03 |
+| A5 (opción 4) | Sólo si el destino es la CMC. La marcada, con área registrada, queda ParaRedirigir y el resto RecibidaYAceptada; el remito queda RecibidoYAceptado (*provisional*) | Sesión 04; fixture `datos-cmc.sql` |
+| A6 | No confirma: no se modifica ni se notifica nada | — |
+| CU 29 | Una notificación por CM de origen, con el bolsín, la CM destino y cada documentación con su estado final. Si falla, no se registra la recepción | Sesión 05 |
+| Robustez | Validación del orden de los pasos y de la selección (pertenencia al bolsín, área, CMC); errores 400/409; transacción con `saveAndFlush` antes de notificar | O1 de la sesión 06 |
+
+Hay **25 pruebas** y todas pasan.
 
 ---
 
 ## 8. Diferencias justificadas entre el código y el diagrama
+
+> **La lista completa y vigente** (flujo descripto, A3 a A5, CU 29, erratas del diagrama y lo que
+> falta implementar) está en **`docs/diferencias_codigo_diagramas.md`**. Lo que sigue son las tres
+> diferencias del flujo descripto, explicadas en detalle.
 
 No hay que "corregirlas" en el código. Son decisiones tomadas porque el diagrama no se puede
 cambiar y hay cosas que Java no permite hacer tal cual.
@@ -327,66 +372,40 @@ Otras diferencias menores:
 - `getOpcionesRecepcion()` devuelve `String[]`.
 - El «include» del CU 29 va antes de `mostrarEjecucionExitosa()`, para no mostrar un éxito si
   la notificación falla.
-- `save()`, `findAll()` y las validaciones son del diseño de persistencia y no aparecen en el
-  diagrama.
+- `saveAndFlush()`, `findAll()` y las validaciones son del diseño de persistencia y no aparecen
+  en el diagrama.
 
 Los errores de tipeo de los diagramas (por ejemplo `tomarConfirmaionRegistro`) se ignoran. El
 código usa el nombre correcto.
 
 ---
 
-## 9. Lo que falta (en orden) y cómo encararlo
+## 9. Lo que falta (en orden)
 
-### 9.1 Opciones de recepción 2, 3 y 4 (A3, A4, A5)
+La implementación del CU 28 y del CU 29 está terminada. El detalle está en `PENDIENTE.txt`.
 
-Reglas de negocio de la ERS ("Recepción de un Bolsín en una CM Destino"):
-
-| Opción | Documentación marcada por el EB | Resto | Remito |
-|---|---|---|---|
-| 2: no se recibe toda (A3) | `registrarNoRecibida` → NoRecibida | `recibirYAceptar` | **RecibidoYAceptadoParcial** si le falta alguna; si no, RecibidoYAceptado |
-| 3: no corresponde al destino (A4) | `recibirYRechazar` → RecibidaYRechazada (vuelve al origen) | `recibirYAceptar` | Decisión del grupo: lo natural es RecibidoYAceptadoParcial |
-| 4: redirigir a un área (A5) | `redirigir` → ParaRedirigir. Sólo si la CM destino es la **Central**; se usa `DetalleRemito.areaCMCDestino` | `recibirYAceptar` | RecibidoYAceptado |
-
-En todos los casos el bolsín pasa a RecibidoEnCMDestino y se notifica con el CU 29.
-
-**Propuesta de implementación**, sin tocar el flujo descripto que ya está alineado:
-
-1. **Pantalla:** un mensaje nuevo del EB, por ejemplo
-   `tomarSeleccionDocumentacion(nrosDocumentacion: int[])`. Se pide después de elegir la
-   opción 2, 3 o 4 y antes de confirmar. Endpoint POST con el mismo nombre.
-2. **DTO:** agregar el número de documentación a `DatosDocumentacion`, para que el front pueda
-   marcar cuáles.
-3. **Gestor:**
-   - guarda la opción y los números marcados;
-   - en `actualizarBolsin()` le pasa al bolsín qué documentación va por "la otra"
-     transición.
-4. **Entidades (Experto):** cada `DetalleRemito` decide qué mensaje mandarle a su
-   `Documentacion` según si está marcada. El `Remito` decide si queda parcial.
-   - La lógica de transición **ya está en el State**: no hace falta ningún `if` sobre estados.
-   - Para no meter `if`/`switch` sobre el texto de la opción, se puede modelar cada opción
-     como un objeto. Esto es opcional y conviene consultarlo con la tutora antes.
-5. **A5 necesita datos:** agregar en `data.sql` un bolsín Enviado con destino Central (CM 1) y
-   cambiar la sesión activa a Ana Ruiz (usuario 3), o agregar una forma de elegir el usuario
-   para la demo.
-6. **Front:** en `OpcionRecepcion.jsx`, si la opción no es la 1, mostrar la lista de
-   documentación con checkboxes antes de pasar a confirmar.
-7. **Pruebas:** agregar pruebas como las de `EstadoDocumentacionTest` y probar el flujo
-   completo en el front. Revisar la base en `/h2-console`.
-
-Como estos mensajes no están en el diagrama, en la defensa se presentan como **extensión de los
-flujos alternativos**. El flujo descripto sigue exactamente igual al diagrama.
-
-### 9.2 Resto del plan (`docs/PENDIENTE.txt`)
-
-- **Repositorio del grupo** en GitHub (se sube el 09/11). El `.gitignore` ya deja afuera
-  `back/target`, `back/data` y `front/node_modules`.
-- Probar el arranque en una computadora limpia siguiendo `COMO_EJECUTAR.txt`.
-- **UX:** fotos del moodboard, mapa de empatía y user journey. Diseño de pantallas con patrones
-  de GUI (plantilla: clasificación, patrón, motivación, reglas de oro, heurísticas,
-  aplicación). Ajustar `front/src/theme.js` al moodboard; hoy es provisorio.
-- **PDF de la Entrega 2** con carátula completa (ver `docs/catedra/...Consignas.pdf`).
-- **Defensa:** todos tienen que poder explicar el State en el código (sección 5) y el
-  recorrido del diagrama (`docs/sesiones/Sesion_01_...`).
+1. **Decisiones para la tutora:** los 14 puntos de `docs/decisiones_para_la_tutora.md`. Los
+   principales:
+   - el estado del remito en A4 y A5;
+   - el área obligatoria en A5;
+   - la CMC reconocida por su nombre;
+   - RNF 5 contra CU 28/29;
+   - qué pasa si falla la notificación;
+   - qué significa A6.
+2. **Decisión del grupo:** declarar o no las 9 operaciones del State que pertenecen a otros CU, y
+   unificar el criterio sobre los diagramas (AGENTS.md regla 1 contra la regla 1 de la sección 2).
+3. **PDF de la Entrega 2,** sin apartado de UX. Lleva:
+   - la carátula completa;
+   - la identificación y justificación del patrón;
+   - las vistas estática y dinámica;
+   - los detalles de implementación;
+   - los diagramas complementarios para A3, A4, A5 y el CU 29, armados a partir de
+     `docs/diferencias_codigo_diagramas.md`.
+4. **Integrar esta copia al repositorio del grupo.** El `.gitignore` deja afuera `back/target`,
+   `back/data` y `front/node_modules`.
+5. **Defensa:** todos tienen que poder seguir `GUIA_DEMOSTRACION.md` y explicar el State en el
+   código (sección 5).
+6. **Terminado:** se mejoró el frontend y se comprobó en escritorio y móvil emulado.
 
 ---
 
@@ -408,5 +427,8 @@ flujos alternativos**. El flujo descripto sigue exactamente igual al diagrama.
   2. levantar el back y el front;
   3. probar el flujo;
   4. mirar la base.
-- Actualizá `docs/PENDIENTE.txt` y agregá un archivo nuevo en `docs/sesiones/` con lo que se
+- Si un cambio agrega o modifica mensajes respecto del diagrama, registralo en
+  `docs/diferencias_codigo_diagramas.md`. Las decisiones que no salen de la ERS van a
+  `docs/decisiones_para_la_tutora.md`.
+- Actualizá `PENDIENTE.txt` y agregá un archivo nuevo en `docs/sesiones/` con lo que se
   hizo en la sesión.
