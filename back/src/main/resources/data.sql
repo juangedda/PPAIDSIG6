@@ -128,3 +128,84 @@ INSERT INTO cambio_estado_documentacion (fecha_hora_inicio, fecha_hora_fin, esta
   ('2026-11-04 10:00:00', '2026-11-05 11:00:00', 'EnRemito', 4, 9),
   ('2026-11-05 11:00:00', '2026-11-06 08:30:00', 'EnBolsinSaliente', 4, 9),
   ('2026-11-06 08:30:00', NULL, 'EnBolsinEnviado', 4, 9);
+
+-- Bolsines extra para probar más veces el CU con la EB de Córdoba (precintos 5007, 5008 y 5009).
+-- Usan numeración propia (bolsín 110+, remito 1100+, documentación 100+) para no chocar con los
+-- fixtures de las pruebas (datos-cmc.sql y datos-varios-origenes.sql).
+
+INSERT INTO bolsin (numero, fecha, numero_precinto, peso, origen_codigo, destino_codigo) VALUES
+  (110, '2026-11-09', 5007, 1100, 3, 2),
+  (111, '2026-11-09', 5008, 600, 1, 2),
+  (112, '2026-11-09', 5009, 850, 4, 2);
+
+INSERT INTO cambio_estado_bolsin (fecha_hora_inicio, fecha_hora_fin, estado_id, responsable_id, bolsin_numero) VALUES
+  ('2026-11-09 10:00:00', '2026-11-09 16:00:00', 1, 2, 110),
+  ('2026-11-09 16:00:00', '2026-11-10 08:30:00', 2, 2, 110),
+  ('2026-11-10 08:30:00', NULL, 3, 2, 110),
+  ('2026-11-09 10:00:00', '2026-11-09 16:00:00', 1, 3, 111),
+  ('2026-11-09 16:00:00', '2026-11-10 08:30:00', 2, 3, 111),
+  ('2026-11-10 08:30:00', NULL, 3, 3, 111),
+  ('2026-11-09 10:00:00', '2026-11-09 16:00:00', 1, 4, 112),
+  ('2026-11-09 16:00:00', '2026-11-10 08:30:00', 2, 4, 112),
+  ('2026-11-10 08:30:00', NULL, 3, 4, 112);
+
+INSERT INTO remito (numero, fecha, estado_id, origen_codigo, destino_codigo, bolsin_numero) VALUES
+  (1100, '2026-11-09', 3, 3, 2, 110),
+  (1101, '2026-11-09', 3, 3, 2, 110),
+  (1102, '2026-11-09', 3, 1, 2, 111),
+  (1103, '2026-11-09', 3, 4, 2, 112),
+  (1104, '2026-11-09', 3, 1, 2, 112);
+
+INSERT INTO documentacion (numero, asunto, fecha_pase, tipo_documento_id, estado_actual) VALUES
+  (100, 'Expediente 210/2026 - Molina, Rita', '2026-11-08', 1, 'EnBolsinEnviado'),
+  (101, 'Dictamen - Quiroga, Tomás', '2026-11-08', 2, 'EnBolsinEnviado'),
+  (102, 'Historia clínica - Aguirre, Nora', '2026-11-08', 3, 'EnBolsinEnviado'),
+  (103, 'Nota de remisión', '2026-11-08', 4, 'EnBolsinEnviado'),
+  (104, 'Expediente 305/2026 - Bustos, Leo', '2026-11-08', 1, 'EnBolsinEnviado'),
+  (105, 'Dictamen - Ortiz, Clara', '2026-11-08', 2, 'EnBolsinEnviado'),
+  (106, 'Historia clínica - Funes, Iván', '2026-11-08', 3, 'EnBolsinEnviado'),
+  (107, 'Expediente 8/2026 - Toledo, Mía', '2026-11-08', 1, 'EnBolsinEnviado');
+
+INSERT INTO detalle_remito (id, area_cmc_destino, documentacion_numero, remito_numero) VALUES
+  (100, NULL, 100, 1100),
+  (101, NULL, 101, 1100),
+  (102, NULL, 102, 1101),
+  (103, NULL, 103, 1102),
+  (104, NULL, 104, 1102),
+  (105, NULL, 105, 1103),
+  (106, NULL, 106, 1103),
+  (107, NULL, 107, 1104);
+
+INSERT INTO cambio_estado_documentacion (fecha_hora_inicio, fecha_hora_fin, estado, responsable_id, documentacion_numero) VALUES
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 2, 100),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 2, 100),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 2, 100),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 2, 100),
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 2, 101),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 2, 101),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 2, 101),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 2, 101),
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 2, 102),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 2, 102),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 2, 102),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 2, 102),
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 3, 103),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 3, 103),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 3, 103),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 3, 103),
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 3, 104),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 3, 104),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 3, 104),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 3, 104),
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 4, 105),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 4, 105),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 4, 105),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 4, 105),
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 4, 106),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 4, 106),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 4, 106),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 4, 106),
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 1, 107),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 1, 107),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 1, 107),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 1, 107);

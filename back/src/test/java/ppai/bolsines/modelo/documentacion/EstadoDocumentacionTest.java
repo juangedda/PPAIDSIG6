@@ -3,6 +3,7 @@ package ppai.bolsines.modelo.documentacion;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -74,6 +75,22 @@ class EstadoDocumentacionTest {
         Documentacion doc = documentacionEn(new ParaRedirigir());
         doc.recibirYAceptar(RECEPCION, encargado);
         verificarTransicion(doc, RecibidaYAceptada.class);
+    }
+
+    @Test
+    void recibidaYRechazadaRedirigirPasaAParaRedirigirConSuHistorial() {
+        Empleado responsableRedireccion = mock(Empleado.class);
+        Documentacion doc = documentacionEn(new RecibidaYRechazada());
+        doc.redirigir(RECEPCION, responsableRedireccion);
+        verificarTransicion(doc, ParaRedirigir.class);
+        CambioEstadoDocumentacion anterior = doc.getCambioEstado().get(0);
+        CambioEstadoDocumentacion nuevo = doc.getCambioEstado().get(1);
+        assertInstanceOf(RecibidaYRechazada.class, anterior.getEstado());
+        assertEquals(ENVIO, anterior.getFechaHoraInicio());
+        assertEquals(RECEPCION, anterior.getFechaHoraFin(), "se cierra en la fecha de la transición");
+        assertSame(encargado, anterior.getResponsableCE());
+        assertEquals(RECEPCION, nuevo.getFechaHoraInicio());
+        assertSame(responsableRedireccion, nuevo.getResponsableCE(), "registra al empleado responsable");
     }
 
     @Test

@@ -16,5 +16,10 @@ export const tomarSeleccionBolsin = async (nroPrecinto) =>
 export const tomarSeleccionOpcionRecepcion = async (opcion) =>
   (await pantalla.post('/tomarSeleccionOpcionRecepcion', { opcion })).data
 
+// A3, A4 y A5: documentación que el EB marca como no recibida, que no corresponde al destino o
+// para redirigir (mensaje nuevo, extensión del diagrama).
+export const tomarSeleccionDocumentacion = async (nrosDocumentacion) =>
+  (await pantalla.post('/tomarSeleccionDocumentacion', { nrosDocumentacion })).data
+
 export const tomarConfirmacionRegistro = async (confirmacion) =>
   (await pantalla.post('/tomarConfirmacionRegistro', { confirmacion })).data

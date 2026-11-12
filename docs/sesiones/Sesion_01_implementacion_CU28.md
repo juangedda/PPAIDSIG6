@@ -2,6 +2,16 @@
 
 PPAI DSI 2026 · 3K5 · Grupo 06 · Fecha: 09/11/2026
 
+> **Nota (10/11/2026).** Este documento registra el estado al 09/11. Desde entonces cambiaron:
+> - las firmas de los mensajes 46 a 52 (`actualizarEstado` y `actualizarDocumentacion` reciben la
+>   documentación marcada en A3, A4 y A5);
+> - el mensaje 66 (el CU 29 ahora recibe una `NotificacionRecepcionBolsin` por cada CM de origen);
+> - `save` pasó a `saveAndFlush`;
+> - las pruebas (ahora son 24).
+>
+> Las diferencias vigentes están en `docs/diferencias_codigo_diagramas.md` y el estado actual, en
+> `CONTEXTO_IA.md`. `CONTEXTO_IA.pdf` ya no existe, y `../PENDIENTE.txt` está en la raíz.
+
 Este documento explica qué se construyó en esta sesión, cómo funciona cada parte del código y a
 qué mensaje del diagrama de secuencia (`docs/diagramas/SECUENCIA PATRON.pdf`) corresponde cada
 línea importante. Sirve para estudiar para la defensa.
@@ -109,8 +119,8 @@ PantallaRegistroRecepcionBolsines. "self" = mensaje a sí mismo (método privado
 | 16 | Actual → EstadoBolsin `sosEnviado()` | `EstadoBolsin.sosEnviado()` | Experto: el estado sabe su nombre |
 | 17 | Gestor → Bolsin `esCmDestino(cm)` | `Bolsin.esCmDestino(cmUsuario)` | ¿Va a la CM del EB? |
 | 18 | Gestor → Bolsin `getNumPrecinto(): int` | `Bolsin.getNumPrecinto()` | Arma `nrosPrecinto[]` |
-| 19 | Gestor → Bolsin `getOrigen(): ComisionMedica` | `Bolsin.getOrigen()` | CM de origen |
-| 20 | Bolsin → ComisionMedica `getNombre()` | `getOrigen().getNombre()` (ver sección 9) | Arma `origenes[]` |
+| 19 | Gestor → Bolsin `getOrigen()` | `Bolsin.getOrigen()` (desde el 12/11 devuelve el nombre) | CM de origen |
+| 20 | Bolsin → ComisionMedica `getNombre()` | dentro de `Bolsin.getOrigen()` | Arma `origenes[]` |
 | 21 | Gestor → Pantalla `mostrarBolsinesEnviadosParaSeleccion(nroPrecinto[], origen[])` | `Pantalla.mostrarBolsinesEnviadosParaSeleccion(...)` | Une los dos arreglos en la lista del combo |
 
 Respuesta al front: `{ nombreCM, bolsines: [{ nroPrecinto, origen }] }`. Con los datos de prueba
@@ -327,12 +337,12 @@ grupo lo decide.
 
 | Dónde | Diagrama | Código | Por qué |
 |---|---|---|---|
-| `obtenerCM()` y `getOrigen()` | La flecha `getNombre()` sale de Empleado / Bolsín hacia ComisionMedica | El gestor recibe la ComisionMedica y le envía `getNombre()` | El método devuelve `ComisionMedica`, como dice el diagrama. El gestor necesita el objeto CM (para `esCmDestino`) y además el nombre (para `mostrarCM`), y un método no puede devolver las dos cosas. El gestor ya conoce a ComisionMedica, así que no se agrega acoplamiento |
+| `obtenerCM()` (en `getOrigen()` se resolvió el 12/11) | La flecha `getNombre()` sale de Empleado hacia ComisionMedica | El gestor recibe la ComisionMedica y le envía `getNombre()` | El método devuelve `ComisionMedica`, como dice el diagrama. El gestor necesita el objeto CM (para `esCmDestino`) y además el nombre (para `mostrarCM`), y un método no puede devolver las dos cosas. El gestor ya conoce a ComisionMedica, así que no se agrega acoplamiento |
 | `Bolsin.buscarRemitos()` | Retorna `remito[]` | Retorna `int[]` | Se respeta la flecha `*getNumero()` de Bolsín a Remito: el bolsín arma los números y el gestor no se acopla a Remito (Bajo Acoplamiento) |
 | `Bolsin.crearCambioEstado()` | Sin parámetros | `crearCambioEstado(fhInicio, e, responsable)` | El `new(fhInicio, e, usuarioResponsable)` necesita esos datos, que son parámetros de `actualizarEstado` |
 | Cierre del CE actual del bolsín | `setFechaHoraFin` directo a Actual:CambioEstadoBolsin | Primero busca el actual con `sosActual()` | Es la misma búsqueda que el diagrama dibuja en `buscarBolsinesEnviados` |
 | `getOpcionesRecepcion()` | `void` en el diagrama de clases | Devuelve `String[]` | Se pasa directo a `mostrarOpcionesRecepcionParaSeleccion` |
-| Orden del «include» | `mostrarEjecucionExitosa()` antes del «include» | La notificación va dentro de `llamarCasoUso29()`, antes de mostrar el éxito | Si la notificación falla, el EB no ve un éxito falso |
+| Orden del «include» (resuelto el 12/11: ahora es igual al diagrama) | `mostrarEjecucionExitosa()` antes del «include» | Antes: la notificación iba dentro de `llamarCasoUso29()`, antes de mostrar el éxito | Si la notificación falla, el EB no ve un éxito falso |
 | Persistencia y validaciones | No aparecen | `findAll()` en los repositorios, `save()`, controles de orden de los pasos | Pertenecen al diseño de persistencia, no a la realización del CU |
 
 **Nombres:** el código usa los de la secuencia. Estas son las diferencias con el diagrama de
@@ -378,7 +388,7 @@ clases o los errores de tipeo que conviene corregir en los diagramas:
 
 ## 11. Pendiente
 
-Ver `docs/PENDIENTE.txt`:
+Ver `../PENDIENTE.txt`:
 
 - decidir los flujos alternativos A3 y A4;
 - UX (moodboard, mapa de empatía, user journey, patrones de GUI y tema);

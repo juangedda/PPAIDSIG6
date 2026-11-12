@@ -1,6 +1,6 @@
 ==============================================================================
  CÓMO EJECUTAR - PPAI Bolsines (DSI 2026) - CU 28 Registrar recepción de bolsín
- 3K5 · Grupo 06 · Última actualización: 09/11/2026
+ 3K5 · Grupo 06 · Última actualización: 10/11/2026
 ==============================================================================
 
 Son dos programas que corren al mismo tiempo, cada uno en su terminal:
@@ -37,16 +37,17 @@ Los comandos de este archivo son para Windows (PowerShell). Para Mac/Linux, ver 
  3. LEVANTAR EL BACK (terminal 1)
 ------------------------------------------------------------------------------
      cd back
-     .\mvnw.cmd clean install        # la primera vez tarda: baja las dependencias y corre las 8 pruebas
+     .\mvnw.cmd clean install        # la primera vez tarda: baja las dependencias y corre las 25 pruebas
      .\mvnw.cmd spring-boot:run
 
   Está listo cuando aparece:
      Started BolsinesApplication in X seconds
   Para comprobarlo, abrir http://localhost:8080/actuator/health. Tiene que decir "UP".
 
-  Si tenés más de un JDK instalado, antes de los comandos apuntá esa terminal al 21
-  (cambiá la ruta por la de tu JDK 21):
+  Si tenés más de un JDK instalado (o "java -version" no dice 21), antes de los comandos apuntá
+  esa terminal al 21 (cambiá la ruta por la de tu JDK 21). Esto vale sólo para esa terminal:
      $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.x-hotspot"
+     $env:Path = "$env:JAVA_HOME\bin;$env:Path"
   Para que quede fijo para tu usuario:
      [Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\ruta\al\jdk-21", "User")
   Después cerrá la terminal y abrí una nueva.
@@ -59,7 +60,8 @@ Los comandos de este archivo son para Windows (PowerShell). Para Mac/Linux, ver 
  4. LEVANTAR EL FRONT (terminal 2)
 ------------------------------------------------------------------------------
      cd front
-     npm install                     # sólo la primera vez (o si cambia package.json)
+     npm ci                          # sólo la primera vez (o si cambia package-lock.json);
+                                     # instala exactamente las versiones del package-lock.json
      npm run dev
 
   Abrir http://localhost:3000 en el navegador.
@@ -69,29 +71,50 @@ Los comandos de este archivo son para Windows (PowerShell). Para Mac/Linux, ver 
 ------------------------------------------------------------------------------
  5. PROBAR EL CASO DE USO
 ------------------------------------------------------------------------------
+  El guion completo de la defensa, con lo que tiene que pasar en cada paso, está en
+  GUIA_DEMOSTRACION.md. Acá va el resumen.
+
   Usuaria logueada: Laura Gómez, Encargada de Bolsines de la Comisión Médica Córdoba.
   Arriba a la derecha tiene que aparecer "Comisión Médica Córdoba".
 
   FLUJO DESCRIPTO
-    1. Aparecen 3 bolsines enviados a Córdoba: 5001 (Central), 5002 (Rosario) y
-       5005 (Mendoza). El 5003 está Cerrado y el 5004 va a Rosario, así que no aparecen.
+    1. Aparecen 6 bolsines enviados a Córdoba: 5001 (Central), 5002 (Rosario), 5005 (Mendoza)
+       y, para probar más veces, 5007 (Rosario), 5008 (Central) y 5009 (Mendoza). El 5003 está
+       Cerrado y el 5004 va a Rosario, así que no aparecen.
     2. "Seleccionar" en el 5001. Se ven los remitos 1001 y 1002 con su documentación.
        Tocar "Continuar".
     3. Elegir la opción "El contenido del bolsín es igual al registrado" y tocar "Continuar".
     4. Tocar "Confirmar recepción". Aparece el mensaje de éxito.
-    5. En la terminal del back aparece la notificación del CU 29:
-          CU 29 - Correo a cm.central@bolsines.test: el bolsín con precinto 5001 fue recibido...
-    6. "Registrar otra recepción": ahora la lista tiene sólo 5002 y 5005.
+    5. En la terminal del back aparece el correo del CU 29, con una línea por documentación:
+          CU 29 - Correo a cm.central@bolsines.test (Comisión Médica Central): el bolsín con
+          precinto 5001 fue recibido en Comisión Médica Córdoba. Situación de la documentación enviada:
+            - Remito 1001, documentación 1 "Expediente 1/2026 - Pérez, Juan": RecibidaYAceptada
+            ...
+    6. "Registrar otra recepción": el 5001 ya no aparece en la lista.
 
   FLUJOS ALTERNATIVOS
     A1 - Escribir un precinto que no existe en "Número de precinto" (por ejemplo 9999).
          Sale el aviso "No se encontró un bolsín con el número de precinto...".
     A2 - Escribir una CM que no está en "Comisión médica origen" (por ejemplo Salta).
          Sale el aviso "No se encontró un bolsín de la comisión médica origen...".
-    A6 - Hacer el flujo hasta el paso 4 y tocar "No confirmar". Sale "Registro cancelado"
-         y el bolsín sigue en la lista.
-    Las opciones 2, 3 y 4 de recepción todavía no están implementadas: responden "todavía no
-    está implementada" (ver docs/PENDIENTE.txt, tarea 27).
+    A3 - Opción 2 "No se recibe toda la documentación": marcar la documentación que no llegó.
+         La marcada queda NoRecibida, el resto RecibidaYAceptada, y el remito al que le faltó
+         algo queda RecibidoYAceptadoParcial.
+    A4 - Opción 3 "Existe documentación que no corresponde al destino": marcar la que no
+         corresponde. Queda RecibidaYRechazada, el resto RecibidaYAceptada, y su remito queda
+         RecibidoYAceptadoParcial (decisión provisional del grupo).
+    A5 - Opción 4 "La documentación se debe redirigir a otra área": sólo si la CM destino es la
+         Central, es decir, cuando el bolsín LLEGA a la Central (no cuando sale de ella). Con
+         Laura (Córdoba) se rechaza con un mensaje. Para mostrarla, levantar el back con el perfil
+         de la CMC (la usuaria pasa a ser Ana Ruiz y aparecen los bolsines 5006 y 5010):
+           cd back
+           .\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=cmc"
+         La documentación marcada (tiene que tener un área de la CMC registrada) queda
+         ParaRedirigir y el resto RecibidaYAceptada. Para volver a la demo normal, levantar el
+         back sin el perfil. data.sql no cambia.
+    A6 - Hacer el flujo hasta "Confirmar" y tocar "No confirmar". Sale "Registro cancelado"
+         y el bolsín sigue en la lista. No se notifica nada.
+    En cualquier paso, "Cancelar registro" vuelve a empezar (Obs. 1 del CU).
 
   VER LA BASE DE DATOS (para mostrar la persistencia)
     http://localhost:8080/h2-console
@@ -103,11 +126,17 @@ Los comandos de este archivo son para Windows (PowerShell). Para Mac/Linux, ver 
       SELECT * FROM cambio_estado_documentacion WHERE documentacion_numero = 1;
       SELECT numero, estado_id FROM remito;
       SELECT * FROM cambio_estado_bolsin WHERE bolsin_numero = 101;
-    Lo esperado:
+    Lo esperado (flujo descripto con el 5001):
       - Documentación 1, 2 y 3 en RecibidaYAceptada. Su cambio de estado anterior queda
         cerrado y el nuevo tiene como responsable a Laura (id 1).
-      - Remitos 1001 y 1002 con estado_id 4 (RecibidoYAceptado).
+      - Remitos 1001 y 1002 con estado_id 4 (RecibidoYAceptado; el 5 es RecibidoYAceptadoParcial).
       - Bolsín 101 con un cambio de estado nuevo: RecibidoEnCMDestino.
+    Más consultas, y lo esperado para A3, A4 y A5, en GUIA_DEMOSTRACION.md.
+
+  PERSISTENCIA ENTRE REINICIOS (opcional)
+    Por defecto, cada arranque recrea la base. Para mostrar que lo guardado persiste, cortar el
+    back y levantarlo sin recrear la base:
+      .\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--spring.jpa.hibernate.ddl-auto=update --spring.sql.init.mode=never"
 
 ------------------------------------------------------------------------------
  6. DETENER
@@ -124,8 +153,8 @@ Los comandos de este archivo son para Windows (PowerShell). Para Mac/Linux, ver 
   - Settings > Build, Execution, Deployment > Build Tools > Maven:
       "Maven home path" = Use Maven wrapper.
   - En la misma sección, Importing > "JDK for importer" = 21, y Runner > "JRE" = 21.
-  - Ejecutar BolsinesApplication (botón verde). Las pruebas están en
-    src/test/java/ppai/bolsines/modelo/documentacion/EstadoDocumentacionTest.
+  - Ejecutar BolsinesApplication (botón verde). Las pruebas están en src/test/java
+    (EstadoDocumentacionTest, RegistroRecepcionBolsinIntegracionTest y otras; 25 en total).
   - El front se corre igual desde la terminal integrada de IntelliJ (paso 4).
 
 ------------------------------------------------------------------------------
@@ -147,7 +176,7 @@ Los comandos de este archivo son para Windows (PowerShell). Para Mac/Linux, ver 
   - "Remote host terminated the handshake", "SSL peer shut down" o dependencias en rojo en
     IntelliJ:
       El antivirus (por ejemplo, el escaneo HTTPS de AVG) corta la descarga desde Maven
-      Central. Desactivarlo un momento y volver a correr .\mvnw.cmd clean install. Después
+      Central. Revisar la conexión, el proxy y los certificados; después repetir la compilación y
       recargar Maven en IntelliJ.
   - "npm no se puede cargar porque la ejecución de scripts está deshabilitada":
       En PowerShell, una sola vez:
@@ -160,13 +189,19 @@ Los comandos de este archivo son para Windows (PowerShell). Para Mac/Linux, ver 
   - El front dice "No se pudo comunicar con el servidor":
       El back no está levantado, o todavía está arrancando.
   - Los datos "volvieron" después de reiniciar: es normal, porque la base se recrea en cada
-      arranque.
+      arranque (ver "Persistencia entre reinicios" en el paso 5).
+  - Una tilde llega mal al back al probar la API con curl en Windows (400 "Invalid UTF-8"):
+      es la consola, no el back. Desde el front no pasa.
   - No hace falta Docker ni PostgreSQL: la base es H2 y viene dentro del back.
 
 ------------------------------------------------------------------------------
  MÁS INFORMACIÓN
 ------------------------------------------------------------------------------
-  CONTEXTO_IA.md / CONTEXTO_IA.pdf   estado del trabajo, reglas y cómo seguir (también con IA)
-  AGENTS.md                          reglas del proyecto
-  docs/PENDIENTE.txt                 plan de trabajo
-  docs/sesiones/                     qué se hizo en cada sesión
+  GUIA_DEMOSTRACION.md                    guion de la defensa (incluye A5 con su fixture)
+  CONTEXTO_IA.md                          estado del trabajo, reglas y cómo seguir (también con IA)
+  AGENTS.md                               reglas del proyecto
+  PENDIENTE.txt                           plan de trabajo
+  docs/sesiones/                          qué se hizo en cada sesión
+  docs/diferencias_codigo_diagramas.md    diferencias entre el código y los diagramas
+  docs/decisiones_para_la_tutora.md       decisiones provisionales a validar
+  GUIA_CAMBIOS_DEL_PROYECTO.md           qué se agregó al proyecto
