@@ -1,5 +1,9 @@
 # Sesión 03: flujo alternativo A4 "Existe documentación que no corresponde al destino"
 
+> **Nota (12/11):** el diseño de los alternativos que describe esta sesión se reemplazó en la
+> sesión 07: el flujo descripto volvió a ser igual al diagrama y A3, A4 y A5 van por métodos aparte
+> (al final de cada archivo, sin clases nuevas). Ver `Sesion_07_revision_y_flujo_del_diagrama.md`.
+
 PPAI DSI 2026 · 3K5 · Grupo 06 · Fecha: 10/11/2026
 
 Este documento describe la **extensión** que se agregó al diseño para implementar A4, reutilizando
@@ -149,6 +153,6 @@ Prueba manual del 10/11:
 - **CU 29:** la ERS pide notificar "la situación de la documentación recibida" a cada CM de origen.
   Hoy sólo se avisa la recepción a la CM de origen del bolsín.
 - **Comparación del texto de la opción en el gestor:** ver la decisión 2.
-- **Documentación:** `PENDIENTE.txt`, `COMO_EJECUTAR.txt` y `CONTEXTO_IA.md` siguen diciendo que
+- **Documentación:** `../PENDIENTE.txt`, `COMO_EJECUTAR.txt` y `CONTEXTO_IA.md` siguen diciendo que
   las opciones 2 a 4 no están implementadas.
 - **A5:** sin implementar. Responde "todavía no está implementada".

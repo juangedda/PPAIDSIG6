@@ -66,7 +66,7 @@ npm run dev
 ```
 
 Abrir http://localhost:3000. La usuaria logueada es Laura Gómez, Encargada de Bolsines de la
-Comisión Médica Córdoba; aparecen los bolsines con precinto 5001, 5002 y 5005. Al confirmar una
+Comisión Médica Córdoba; aparecen los bolsines con precinto 5001, 5002, 5005, 5007, 5008 y 5009. Al confirmar una
 recepción, el correo del CU 29 aparece en la consola del back. A5 (redirigir a un área de la CMC)
 se muestra levantando el back con el fixture de la CMC: ver la Parte 2 de `GUIA_DEMOSTRACION.md`.
 

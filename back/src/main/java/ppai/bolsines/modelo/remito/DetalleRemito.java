@@ -1,6 +1,7 @@
 package ppai.bolsines.modelo.remito;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,10 +15,8 @@ import ppai.bolsines.modelo.documentacion.Documentacion;
 import ppai.bolsines.modelo.usuario.Empleado;
 
 /**
- * DetalleRemito del diagrama de secuencia (DetallesRemito en el de clases).
- * Conoce la documentación incluida y, cuando corresponde, el área de destino
- * dentro de la CMC. Por Experto (GRASP), determina qué operación pedirle a
- * Documentacion según lo que marcó el encargado en A3, A4 o A5.
+ * DetalleRemito del diagrama de secuencia (DetallesRemito en el de clases). Conoce la documentación
+ * incluida y, cuando corresponde, el área de destino dentro de la CMC.
  */
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,49 +31,72 @@ public class DetalleRemito {
     @JoinColumn(name = "documentacion_numero")
     private Documentacion documentacion;
 
+    // ---------------------------------------------------------------- flujo descripto (diagrama)
+
     /**
      * En la secuencia: Remito -> :DetalleRemito buscarDatosDocumentacion(): String[], que envía getAsunto() y
-     * getNombreTipo() a :Documentacion. En el diagrama devuelve [asunto, tipo]; acá devuelve
-     * [nroDocumentacion, asunto, tipo, areaCMCDestino (puede ser null)]: el número y el área son
-     * extensiones de A3/A4/A5.
+     * getNombreTipo() a :Documentacion. Devuelve [asunto, tipo].
      */
     public String[] buscarDatosDocumentacion() {
-        return new String[] { String.valueOf(documentacion.getNumero()), documentacion.getAsunto(),
-                documentacion.getNombreTipo(), areaCMCDestino };
+        return new String[] { documentacion.getAsunto(), documentacion.getNombreTipo() };
     }
 
-    /** Extensión CU 29 (no está en el diagrama): devuelve [nroDocumentacion, asunto, estado actual]. */
+    /**
+     * En la secuencia: Remito -> :DetalleRemito actualizarDocumentacion(fhActual, responsable) y
+     * DetalleRemito -> :Documentacion recibirYAceptar(fhActual, responsable).
+     */
+    public void actualizarDocumentacion(LocalDateTime fhActual, Empleado responsable) {
+        documentacion.recibirYAceptar(fhActual, responsable);
+    }
+
+    // ------------------------------------------------------ extensión CU 29 (no está en el diagrama)
+
+    /** Devuelve [nroDocumentacion, asunto, estado actual]. */
     public String[] buscarSituacionDocumentacion() {
         return new String[] { String.valueOf(documentacion.getNumero()), documentacion.getAsunto(),
                 documentacion.getNombreEstado() };
     }
 
-    /**
-     * En la secuencia: Remito -> :DetalleRemito actualizarDocumentacion(fhActual: DateTime, responsable: Empleado)
-     * y DetalleRemito -> :Documentacion recibirYAceptar(fhActual, responsable).
-     * Diferencia por A3, A4 y A5: recibe además nrosNoRecibida, nrosRechazada y nrosParaRedirigir, y según
-     * lo que marcó el EB envía registrarNoRecibida (A3), recibirYRechazar (A4) o redirigir (A5). Las
-     * condiciones son sobre los datos que marcó el EB, no sobre el nombre de un estado.
-     */
-    public void actualizarDocumentacion(LocalDateTime fhActual, Empleado responsable, int[] nrosNoRecibida,
-            int[] nrosRechazada, int[] nrosParaRedirigir) {
-        if (documentacion.estaEntre(nrosNoRecibida)) {
-            documentacion.registrarNoRecibida(fhActual, responsable);
-        } else if (documentacion.estaEntre(nrosRechazada)) {
-            documentacion.recibirYRechazar(fhActual, responsable);
-        } else if (documentacion.estaEntre(nrosParaRedirigir)) {
-            documentacion.redirigir(fhActual, responsable);
-        } else {
-            documentacion.recibirYAceptar(fhActual, responsable);
-        }
+    // ============================================================================================
+    // Flujos alternativos A3, A4 y A5 (extensión: no están en el diagrama de secuencia).
+    // opcionRecepcion es el número de la opción del paso 7 del CU (2, 3 o 4).
+    // ============================================================================================
+
+    /** Datos para que el EB marque la documentación: [nroDocumentacion, asunto, tipo, areaCMCDestino]. */
+    public String[] buscarDocumentacionParaMarcar() {
+        return new String[] { String.valueOf(documentacion.getNumero()), documentacion.getAsunto(),
+                documentacion.getNombreTipo(), areaCMCDestino };
+    }
+
+    /** ¿Es la documentación con ese número? En A5 (opción 4) además tiene que tener el área de la CMC. */
+    public boolean admiteSeleccion(int nroDocumentacion, int opcionRecepcion) {
+        return documentacion.getNumero() == nroDocumentacion && (opcionRecepcion != 4 || areaCMCDestino != null);
     }
 
     /**
-     * Extensión A3/A4 (no está en el diagrama): ¿el EB la marcó como no recibida (A3) o como que no
-     * corresponde al destino (A4)? La que se redirige (A5) sí corresponde a la CMC: no cuenta como no
-     * aceptada.
+     * Si su documentación no está marcada, se recibe y acepta como en el flujo descripto. Si está marcada,
+     * se le envía la transición de la opción elegida; si no es válida en su estado, el State la rechaza.
      */
-    public boolean esNoAceptada(int[] nrosNoRecibida, int[] nrosRechazada) {
-        return documentacion.estaEntre(nrosNoRecibida) || documentacion.estaEntre(nrosRechazada);
+    public void actualizarDocumentacion(LocalDateTime fhActual, Empleado responsable, int opcionRecepcion,
+            int[] nrosMarcados) {
+        if (!estaMarcada(nrosMarcados)) {
+            actualizarDocumentacion(fhActual, responsable);
+            return;
+        }
+        switch (opcionRecepcion) {
+            case 2 -> documentacion.registrarNoRecibida(fhActual, responsable); // A3
+            case 3 -> documentacion.recibirYRechazar(fhActual, responsable);    // A4
+            case 4 -> documentacion.redirigir(fhActual, responsable);           // A5
+            default -> throw new IllegalArgumentException("La opción " + opcionRecepcion + " no marca documentación");
+        }
+    }
+
+    /** A3 y A4: el remito queda RecibidoYAceptadoParcial si su documentación está marcada. En A5, no. */
+    public boolean dejaRemitoParcial(int opcionRecepcion, int[] nrosMarcados) {
+        return opcionRecepcion != 4 && estaMarcada(nrosMarcados);
+    }
+
+    private boolean estaMarcada(int[] nrosMarcados) {
+        return Arrays.stream(nrosMarcados).anyMatch(nro -> nro == documentacion.getNumero());
     }
 }

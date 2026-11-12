@@ -24,12 +24,12 @@ public class EstadoRemito {
         return "RecibidoYAceptado".equals(nombre);
     }
 
+    // ============================================================================================
+    // Flujos alternativos A3 y A4 (extensión: no están en el diagrama de secuencia).
+    // ============================================================================================
+
     /** Extensión A3/A4 (no está en el diagrama): el estado del remito al que no se le aceptó toda la documentación. */
     public boolean esRecibidoYAceptadoParcial() {
         return "RecibidoYAceptadoParcial".equals(nombre);
-    }
-
-    public String getNombre() {
-        return nombre;
     }
 }

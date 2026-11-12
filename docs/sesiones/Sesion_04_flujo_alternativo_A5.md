@@ -1,5 +1,9 @@
 # Sesión 04: flujo alternativo A5 "La documentación se debe redirigir a otra área"
 
+> **Nota (12/11):** el diseño de los alternativos que describe esta sesión se reemplazó en la
+> sesión 07: el flujo descripto volvió a ser igual al diagrama y A3, A4 y A5 van por métodos aparte
+> (al final de cada archivo, sin clases nuevas). Ver `Sesion_07_revision_y_flujo_del_diagrama.md`.
+
 PPAI DSI 2026 · 3K5 · Grupo 06 · Fecha: 10/11/2026
 
 Con A5 quedan implementados todos los flujos alternativos del CU 28: A1/A2 (filtros), A3, A4, A5 y
@@ -160,5 +164,5 @@ Prueba manual del 10/11:
 - **La opción 4 se ofrece siempre** (`getOpcionesRecepcion()` del diagrama devuelve las 4) y se
   rechaza al elegirla si el destino no es la CMC. Otra posibilidad es ocultarla.
 - **CU 29:** no informa la situación de la documentación (no recibida, rechazada o para redirigir).
-- **Documentación:** `PENDIENTE.txt`, `COMO_EJECUTAR.txt` y `CONTEXTO_IA.md` siguen diciendo que
+- **Documentación:** `../PENDIENTE.txt`, `COMO_EJECUTAR.txt` y `CONTEXTO_IA.md` siguen diciendo que
   las opciones 2 a 4 no están implementadas.

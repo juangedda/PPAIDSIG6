@@ -20,6 +20,7 @@ import ppai.bolsines.dto.SeleccionBolsinResponse.RemitoConDocumentacion;
 import ppai.bolsines.dto.SeleccionDocumentacionRequest;
 import ppai.bolsines.dto.SeleccionOpcionRequest;
 import ppai.bolsines.dto.SeleccionOpcionResponse;
+import ppai.bolsines.dto.SeleccionOpcionResponse.RemitoParaMarcar;
 import ppai.bolsines.gestor.GestorRegistroRecepcionBolsines;
 
 /**
@@ -43,7 +44,8 @@ public class PantallaRegistroRecepcionBolsines {
     private List<RemitoConDocumentacion> remitos;
     private List<String> opciones;
     private String mensaje;
-    private boolean seleccionarDocumentacion; // extensión A3/A4/A5: indica al front que sigue marcar documentación
+    // Extensión A3, A4 y A5: documentación que el EB tiene que marcar (vacía en el flujo descripto).
+    private List<RemitoParaMarcar> documentacionParaMarcar;
 
     /** En la secuencia: EB -> Pantalla opcRegistrarRecepcionBolsin(); luego mensaje a sí mismo habilitarPantalla() y Pantalla -> Gestor. */
     @PostMapping("/opcRegistrarRecepcionBolsin")
@@ -60,7 +62,7 @@ public class PantallaRegistroRecepcionBolsines {
         remitos = List.of();
         opciones = List.of();
         mensaje = null;
-        seleccionarDocumentacion = false;
+        documentacionParaMarcar = List.of();
     }
 
     /** En la secuencia: Gestor -> Pantalla mostrarCM(nombre: String). Paso 2 del CU. */
@@ -89,8 +91,7 @@ public class PantallaRegistroRecepcionBolsines {
     /**
      * En la secuencia: Gestor -> Pantalla mostrarNumRemitosyDocumentacionAsociada(nrosRemito: int[],
      * documentacion: String[][]). Paso 6 (en el diagrama de clases figura como
-     * mostrarNumRemitosYDocumentaciónAsociada). Extensión: cada fila trae también el número de
-     * documentación (para marcarla en A3/A4/A5) y el área de la CMC (A5).
+     * mostrarNumRemitosYDocumentaciónAsociada). Filas [nroRemito, asunto, tipo].
      */
     public void mostrarNumRemitosyDocumentacionAsociada(int[] nrosRemito, String[][] documentacion) {
         remitos = RemitoConDocumentacion.agrupar(nrosRemito, documentacion);
@@ -104,42 +105,14 @@ public class PantallaRegistroRecepcionBolsines {
     /** En la secuencia: EB -> Pantalla tomarSeleccionOpcionRecepcion(opcion: String) y Pantalla -> Gestor. Paso 8. */
     @PostMapping("/tomarSeleccionOpcionRecepcion")
     public synchronized SeleccionOpcionResponse tomarSeleccionOpcionRecepcion(@Valid @RequestBody SeleccionOpcionRequest request) {
+        documentacionParaMarcar = List.of();
         gestor.tomarSeleccionOpcionRecepcion(request.opcion());
-        return new SeleccionOpcionResponse(mensaje, seleccionarDocumentacion);
+        return new SeleccionOpcionResponse(mensaje, !documentacionParaMarcar.isEmpty(), documentacionParaMarcar);
     }
 
     /** En la secuencia: Gestor -> Pantalla solicitarConfirmacionRegistro(). Paso 9. */
     public void solicitarConfirmacionRegistro() {
         mensaje = "¿Confirma el registro de la recepción del bolsín?";
-        seleccionarDocumentacion = false;
-    }
-
-    /** Extensión A3 (no está en la secuencia): pide que el EB marque la documentación que no llegó. */
-    public void solicitarSeleccionDocumentacionNoRecibida() {
-        mensaje = "Seleccione la documentación que no se recibió.";
-        seleccionarDocumentacion = true;
-    }
-
-    /** Extensión A4 (no está en la secuencia): pide que el EB marque la documentación que no corresponde a su CM. */
-    public void solicitarSeleccionDocumentacionRechazada() {
-        mensaje = "Seleccione la documentación que no corresponde a esta comisión médica.";
-        seleccionarDocumentacion = true;
-    }
-
-    /** Extensión A5 (no está en la secuencia): pide que el EB marque la documentación que va a otra área de la CMC. */
-    public void solicitarSeleccionDocumentacionParaRedirigir() {
-        mensaje = "Seleccione la documentación que se debe redirigir a otra área de la Comisión Médica Central.";
-        seleccionarDocumentacion = true;
-    }
-
-    /**
-     * Extensión A3, A4 y A5 (no está en la secuencia): EB -> Pantalla tomarSeleccionDocumentacion(nrosDocumentacion)
-     * y Pantalla -> Gestor con el mismo nombre. Va entre la elección de la opción y la confirmación.
-     */
-    @PostMapping("/tomarSeleccionDocumentacion")
-    public synchronized MensajeResponse tomarSeleccionDocumentacion(@Valid @RequestBody SeleccionDocumentacionRequest request) {
-        gestor.tomarSeleccionDocumentacion(request.nrosDocumentacion());
-        return new MensajeResponse(mensaje);
     }
 
     /**
@@ -156,6 +129,29 @@ public class PantallaRegistroRecepcionBolsines {
     /** En la secuencia: Gestor -> Pantalla mostrarEjecucionExitosa(). Paso 12. */
     public void mostrarEjecucionExitosa() {
         mensaje = "Se registró la recepción del bolsín y se notificó a cada comisión médica de origen.";
+    }
+
+    // ============================================================================================
+    // Flujos alternativos A3, A4, A5 y A6 (extensión: no están en el diagrama de secuencia).
+    // ============================================================================================
+
+    /**
+     * Extensión A3, A4 y A5 (no está en la secuencia): Gestor -> Pantalla con el pedido de la opción elegida
+     * y la documentación para marcar, filas [nroRemito, nroDocumentacion, asunto, tipo, areaCMCDestino].
+     */
+    public void solicitarSeleccionDocumentacion(String mensajeSeleccion, String[][] documentacion) {
+        mensaje = mensajeSeleccion;
+        documentacionParaMarcar = RemitoParaMarcar.agrupar(documentacion);
+    }
+
+    /**
+     * Extensión A3, A4 y A5 (no está en la secuencia): EB -> Pantalla tomarSeleccionDocumentacion(nrosDocumentacion)
+     * y Pantalla -> Gestor con el mismo nombre. Va entre la elección de la opción y la confirmación.
+     */
+    @PostMapping("/tomarSeleccionDocumentacion")
+    public synchronized MensajeResponse tomarSeleccionDocumentacion(@Valid @RequestBody SeleccionDocumentacionRequest request) {
+        gestor.tomarSeleccionDocumentacion(request.nrosDocumentacion());
+        return new MensajeResponse(mensaje);
     }
 
     /** Extensión A6 (no está en la secuencia): el EB no confirma; se informa que no se modificó nada. */

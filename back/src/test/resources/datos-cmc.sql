@@ -1,6 +1,6 @@
 -- Escenario aislado para probar A5 (redirigir documentación a otra área de la CMC).
 -- NO forma parte de los datos de la demo: se carga después de data.sql sólo en las pruebas que lo
--- piden (@Sql) o si se levanta el back a mano con este archivo como dato adicional.
+-- piden (@Sql) o si se levanta el back con el perfil cmc ("-Dspring-boot.run.profiles=cmc").
 -- La EB logueada pasa a ser Ana Ruiz (Comisión Médica Central) y hay un bolsín enviado de Córdoba
 -- a la Central. Las áreas de la CMC son datos de prueba del detalle de remito (areaCMCDestino).
 
@@ -44,3 +44,40 @@ INSERT INTO cambio_estado_documentacion (fecha_hora_inicio, fecha_hora_fin, esta
   ('2026-11-06 10:00:00', '2026-11-07 11:00:00', 'EnRemito', 1, 12),
   ('2026-11-07 11:00:00', '2026-11-08 08:30:00', 'EnBolsinSaliente', 1, 12),
   ('2026-11-08 08:30:00', NULL, 'EnBolsinEnviado', 1, 12);
+
+-- Otro bolsín enviado a la Central (precinto 5010, de Rosario), para probar A5 más de una vez.
+
+INSERT INTO bolsin (numero, fecha, numero_precinto, peso, origen_codigo, destino_codigo) VALUES
+  (113, '2026-11-09', 5010, 780, 3, 1);
+
+INSERT INTO cambio_estado_bolsin (fecha_hora_inicio, fecha_hora_fin, estado_id, responsable_id, bolsin_numero) VALUES
+  ('2026-11-09 10:00:00', '2026-11-09 16:00:00', 1, 2, 113),
+  ('2026-11-09 16:00:00', '2026-11-10 08:30:00', 2, 2, 113),
+  ('2026-11-10 08:30:00', NULL, 3, 2, 113);
+
+INSERT INTO remito (numero, fecha, estado_id, origen_codigo, destino_codigo, bolsin_numero) VALUES
+  (1105, '2026-11-09', 3, 3, 1, 113);
+
+INSERT INTO documentacion (numero, asunto, fecha_pase, tipo_documento_id, estado_actual) VALUES
+  (110, 'Expediente 412/2026 - Paredes, Ema', '2026-11-08', 1, 'EnBolsinEnviado'),
+  (111, 'Dictamen recurso - Ibáñez, Gael', '2026-11-08', 2, 'EnBolsinEnviado'),
+  (112, 'Nota a la Gerencia', '2026-11-08', 4, 'EnBolsinEnviado');
+
+INSERT INTO detalle_remito (id, area_cmc_destino, documentacion_numero, remito_numero) VALUES
+  (110, 'Área de Recursos', 110, 1105),
+  (111, 'Área de Dictámenes', 111, 1105),
+  (112, NULL, 112, 1105);
+
+INSERT INTO cambio_estado_documentacion (fecha_hora_inicio, fecha_hora_fin, estado, responsable_id, documentacion_numero) VALUES
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 2, 110),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 2, 110),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 2, 110),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 2, 110),
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 2, 111),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 2, 111),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 2, 111),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 2, 111),
+  ('2026-11-08 09:00:00', '2026-11-09 10:00:00', 'Registrada', 2, 112),
+  ('2026-11-09 10:00:00', '2026-11-09 15:00:00', 'EnRemito', 2, 112),
+  ('2026-11-09 15:00:00', '2026-11-10 08:30:00', 'EnBolsinSaliente', 2, 112),
+  ('2026-11-10 08:30:00', NULL, 'EnBolsinEnviado', 2, 112);

@@ -1,5 +1,9 @@
 # Sesión 06: auditoría integral y correcciones de bajo riesgo
 
+> **Nota (12/11):** el diseño de los alternativos que describe esta sesión se reemplazó en la
+> sesión 07: el flujo descripto volvió a ser igual al diagrama y A3, A4 y A5 van por métodos aparte
+> (al final de cada archivo, sin clases nuevas). Ver `Sesion_07_revision_y_flujo_del_diagrama.md`.
+
 PPAI DSI 2026 · 3K5 · Grupo 06 · Fecha: 10/11/2026
 
 Se hizo una auditoría de cumplimiento funcional, consistencia con el modelado, calidad del diseño y
@@ -67,7 +71,7 @@ y `RecibidoYAceptado`.
 
 ## 4. O2: documentación al día
 
-- `PENDIENTE.txt`:
+- `../PENDIENTE.txt`:
   - las tareas 27 y 28 completas;
   - la tarea 25 con 24 pruebas;
   - los entregables de UX (29 y 30) como **N/A por comunicado docente**, no como completados;

@@ -8,27 +8,40 @@ import org.junit.jupiter.api.Test;
 
 import ppai.bolsines.dto.SeleccionBolsinResponse.DatosDocumentacion;
 import ppai.bolsines.dto.SeleccionBolsinResponse.RemitoConDocumentacion;
+import ppai.bolsines.dto.SeleccionOpcionResponse.DocumentacionParaMarcar;
+import ppai.bolsines.dto.SeleccionOpcionResponse.RemitoParaMarcar;
 
-/**
- * La pantalla agrupa las filas por remito y conserva el número que identifica a cada documentación
- * y el área de la CMC de su detalle de remito.
- */
+/** La pantalla agrupa por remito las filas que le manda el gestor. */
 class SeleccionBolsinResponseTest {
 
+    /** Flujo descripto: filas [nroRemito, asunto, tipo] de mostrarNumRemitosyDocumentacionAsociada. */
     @Test
-    void agrupaPorRemitoConElNumeroYElAreaDeCadaDocumentacion() {
+    void agrupaLaDocumentacionPorRemito() {
+        String[][] filas = {
+                { "1001", "Expediente 1", "Expediente" },
+                { "1001", "Dictamen", "Dictamen" },
+                { "1002", "Historia clínica", "Historia clínica" } };
+
+        assertEquals(List.of(
+                new RemitoConDocumentacion(1001, List.of(new DatosDocumentacion("Expediente 1", "Expediente"),
+                        new DatosDocumentacion("Dictamen", "Dictamen"))),
+                new RemitoConDocumentacion(1002, List.of(new DatosDocumentacion("Historia clínica", "Historia clínica")))),
+                RemitoConDocumentacion.agrupar(new int[] { 1001, 1002 }, filas));
+    }
+
+    /** Extensión A3, A4 y A5: filas [nroRemito, nroDocumentacion, asunto, tipo, areaCMCDestino]. */
+    @Test
+    void agrupaLaDocumentacionParaMarcarConSuNumeroYSuArea() {
         String[][] filas = {
                 { "1001", "1", "Expediente 1", "Expediente", null },
                 { "1001", "2", "Expediente 1", "Expediente", "Mesa de Entradas" }, // mismo asunto: sólo el número las distingue
                 { "1002", "3", "Historia clínica", "Historia clínica", null } };
 
-        List<RemitoConDocumentacion> remitos = RemitoConDocumentacion.agrupar(new int[] { 1001, 1002 }, filas);
-
         assertEquals(List.of(
-                new RemitoConDocumentacion(1001, List.of(new DatosDocumentacion(1, "Expediente 1", "Expediente", null),
-                        new DatosDocumentacion(2, "Expediente 1", "Expediente", "Mesa de Entradas"))),
-                new RemitoConDocumentacion(1002,
-                        List.of(new DatosDocumentacion(3, "Historia clínica", "Historia clínica", null)))),
-                remitos);
+                new RemitoParaMarcar(1001, List.of(new DocumentacionParaMarcar(1, "Expediente 1", "Expediente", null),
+                        new DocumentacionParaMarcar(2, "Expediente 1", "Expediente", "Mesa de Entradas"))),
+                new RemitoParaMarcar(1002,
+                        List.of(new DocumentacionParaMarcar(3, "Historia clínica", "Historia clínica", null)))),
+                RemitoParaMarcar.agrupar(filas));
     }
 }

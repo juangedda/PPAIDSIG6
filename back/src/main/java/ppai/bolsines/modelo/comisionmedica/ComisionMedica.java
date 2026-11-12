@@ -38,6 +38,10 @@ public class ComisionMedica {
         return email;
     }
 
+    // ============================================================================================
+    // Flujos alternativos A5 (extensión: no están en el diagrama de secuencia).
+    // ============================================================================================
+
     /**
      * Extensión A5 (no está en el diagrama): sólo la CMC redirige documentación a sus áreas. Se reconoce
      * por el nombre porque el modelo no tiene otro dato que la distinga (decisión 5 para la tutora).

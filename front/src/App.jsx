@@ -27,6 +27,7 @@ export default function App() {
   const [exito, setExito] = useState(false)
   const [marcarDocumentacion, setMarcarDocumentacion] = useState(false)
   const [marcadas, setMarcadas] = useState([])
+  const [paraMarcar, setParaMarcar] = useState([])
 
   // Envuelve cada llamado: muestra la espera y el mensaje de error que devuelve el back.
   const ejecutar = useCallback(async (llamado) => {
@@ -59,21 +60,23 @@ export default function App() {
     setPaso(1)
   })
 
-  // Si la pantalla pide marcar documentación (A3 o A4), se queda en este paso.
+  // Opción 1: pasa a confirmar. Opciones 2, 3 y 4 (A3, A4 y A5): la pantalla manda la documentación
+  // para marcar y se queda en este paso.
   const elegirOpcion = (opcionElegida) => ejecutar(async () => {
     const respuesta = await tomarSeleccionOpcionRecepcion(opcionElegida)
     setOpcion(opcionElegida)
     setMensaje(respuesta.mensaje)
     setMarcadas([])
+    setParaMarcar(respuesta.remitos)
     setMarcarDocumentacion(respuesta.seleccionarDocumentacion)
     if (!respuesta.seleccionarDocumentacion) setPaso(3)
   })
 
-  // A3 y A4: tomarSeleccionDocumentacion(nrosDocumentacion).
+  // A3, A4 y A5: tomarSeleccionDocumentacion(nrosDocumentacion).
   const seleccionarDocumentacion = (nros) => ejecutar(async () => {
     const respuesta = await tomarSeleccionDocumentacion(nros)
     setMensaje(respuesta.mensaje)
-    setMarcadas(seleccion.remitos.flatMap((r) => r.documentacion)
+    setMarcadas(paraMarcar.flatMap((r) => r.documentacion)
       .filter((d) => nros.includes(d.nroDocumentacion)).map((d) => d.asunto))
     setPaso(3)
   })
@@ -89,7 +92,7 @@ export default function App() {
     <SeleccionBolsin key="seleccion" bolsines={bolsines} onSeleccionar={seleccionarBolsin} />,
     <ContenidoBolsin key="contenido" nroPrecinto={nroPrecinto} remitos={seleccion.remitos} onContinuar={() => setPaso(2)} />,
     marcarDocumentacion
-      ? <SeleccionDocumentacion key="documentacion" mensaje={mensaje} remitos={seleccion.remitos}
+      ? <SeleccionDocumentacion key="documentacion" mensaje={mensaje} remitos={paraMarcar}
           onSeleccionar={seleccionarDocumentacion} onVolver={() => setMarcarDocumentacion(false)} />
       : <OpcionRecepcion key="opcion" opciones={seleccion.opciones} onElegir={elegirOpcion} />,
     <Confirmacion key="confirmacion" mensaje={mensaje} nroPrecinto={nroPrecinto} opcion={opcion}

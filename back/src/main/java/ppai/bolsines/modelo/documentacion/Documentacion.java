@@ -62,35 +62,9 @@ public class Documentacion {
         this.tipoDocumento = tipoDocumento;
     }
 
-    /**
-     * Extensión A3, A4 y A5 (no está en el diagrama): identifica sin ambigüedad a la documentación que
-     * el EB marca (el número es su clave; el asunto se puede repetir).
-     */
-    public int getNumero() {
-        return numero;
-    }
-
-    /** Extensión A3, A4 y A5 (no está en el diagrama): ¿su número está entre los que marcó el EB? */
-    public boolean estaEntre(int[] nrosDocumentacion) {
-        for (int nro : nrosDocumentacion) {
-            if (nro == numero) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /** En la secuencia: DetalleRemito -> :Documentacion getAsunto(). */
     public String getAsunto() {
         return asunto;
-    }
-
-    /**
-     * Extensión CU 29 (no está en el diagrama): nombre del estado actual, para informar la situación de
-     * la documentación. Sólo lee el nombre que ya tiene el estado; no agrega lógica al State.
-     */
-    public String getNombreEstado() {
-        return estadoActual.getNombre();
     }
 
     /** En la secuencia: DetalleRemito -> :Documentacion getNombreTipo(), que a su vez envía getNombre() a :TipoDocumento. */
@@ -140,5 +114,27 @@ public class Documentacion {
     /** En la secuencia: EnBolsinEnviado -> :Documentacion agregarCE(ce: CambioEstadoDocumentacion). Lo llama el estado. */
     public void agregarCE(CambioEstadoDocumentacion ce) {
         cambioEstado.add(ce);
+    }
+
+    // ------------------------------------------------------ extensión CU 29 (no está en el diagrama)
+
+    /**
+     * Extensión CU 29 (no está en el diagrama): nombre del estado actual, para informar la situación de
+     * la documentación. Sólo lee el nombre que ya tiene el estado; no agrega lógica al State.
+     */
+    public String getNombreEstado() {
+        return estadoActual.getNombre();
+    }
+
+    // ============================================================================================
+    // Flujos alternativos A3, A4 y A5 (extensión: no están en el diagrama de secuencia).
+    // ============================================================================================
+
+    /**
+     * Extensión A3, A4 y A5 (no está en el diagrama): identifica sin ambigüedad a la documentación que
+     * el EB marca (el número es su clave; el asunto se puede repetir).
+     */
+    public int getNumero() {
+        return numero;
     }
 }

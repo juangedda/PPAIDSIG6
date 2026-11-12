@@ -74,8 +74,11 @@ class RegistroRecepcionBolsinIntegracionTest {
 
     @Test
     void flujoDescriptoTodoQuedaRecibidoYAceptado() {
-        SeleccionOpcionResponse respuesta = elegirOpcion(5002, OPCION_1);
+        SeleccionBolsinResponse contenido = seleccionarBolsin(5002);
+        assertEquals("Expediente 77/2026 - Díaz, Carla", contenido.remitos().get(0).documentacion().get(0).asunto());
+        SeleccionOpcionResponse respuesta = pantalla.tomarSeleccionOpcionRecepcion(new SeleccionOpcionRequest(OPCION_1));
         assertFalse(respuesta.seleccionarDocumentacion());
+        assertEquals("¿Confirma el registro de la recepción del bolsín?", respuesta.mensaje());
 
         pantalla.tomarConfirmacionRegistro(new ConfirmacionRequest(true));
 
@@ -91,11 +94,10 @@ class RegistroRecepcionBolsinIntegracionTest {
 
     @Test
     void a3LaDocumentacionMarcadaQuedaNoRecibidaYSuRemitoParcial() {
-        SeleccionBolsinResponse contenido = seleccionarBolsin(5001);
-        assertEquals(List.of(1, 2, 3), contenido.remitos().stream()
-                .flatMap(r -> r.documentacion().stream()).map(d -> d.nroDocumentacion()).toList());
-        SeleccionOpcionResponse respuesta = pantalla.tomarSeleccionOpcionRecepcion(new SeleccionOpcionRequest(OPCION_2));
+        SeleccionOpcionResponse respuesta = elegirOpcion(5001, OPCION_2);
         assertTrue(respuesta.seleccionarDocumentacion());
+        assertEquals(List.of(1, 2, 3), respuesta.remitos().stream()
+                .flatMap(r -> r.documentacion().stream()).map(d -> d.nroDocumentacion()).toList());
 
         marcar(2);
         pantalla.tomarConfirmacionRegistro(new ConfirmacionRequest(true));
@@ -190,11 +192,11 @@ class RegistroRecepcionBolsinIntegracionTest {
     void a5ConDestinoCmcLaDocumentacionMarcadaQuedaParaRedirigir() {
         OpcRegistrarRecepcionResponse inicio = pantalla.opcRegistrarRecepcionBolsin();
         assertEquals(CENTRAL, inicio.nombreCM());
-        assertEquals(List.of(5006), inicio.bolsines().stream().map(b -> b.nroPrecinto()).toList());
-        SeleccionBolsinResponse contenido = pantalla.tomarSeleccionBolsin(new SeleccionBolsinRequest(5006));
-        assertEquals("Área de Dictámenes", contenido.remitos().get(0).documentacion().get(0).areaCMCDestino());
+        assertEquals(List.of(5006, 5010), inicio.bolsines().stream().map(b -> b.nroPrecinto()).toList());
+        pantalla.tomarSeleccionBolsin(new SeleccionBolsinRequest(5006));
         SeleccionOpcionResponse respuesta = pantalla.tomarSeleccionOpcionRecepcion(new SeleccionOpcionRequest(OPCION_4));
         assertTrue(respuesta.seleccionarDocumentacion());
+        assertEquals("Área de Dictámenes", respuesta.remitos().get(0).documentacion().get(0).areaCMCDestino());
 
         marcar(10);
         pantalla.tomarConfirmacionRegistro(new ConfirmacionRequest(true));

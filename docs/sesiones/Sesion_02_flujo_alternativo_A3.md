@@ -1,5 +1,9 @@
 # Sesión 02: flujo alternativo A3 "No se recibe toda la documentación"
 
+> **Nota (12/11):** el diseño de los alternativos que describe esta sesión se reemplazó en la
+> sesión 07: el flujo descripto volvió a ser igual al diagrama y A3, A4 y A5 van por métodos aparte
+> (al final de cada archivo, sin clases nuevas). Ver `Sesion_07_revision_y_flujo_del_diagrama.md`.
+
 PPAI DSI 2026 · 3K5 · Grupo 06 · Fecha: 10/11/2026
 
 > **Nota (sesión 03):** para reutilizar el paso de selección en A4, algunos nombres de este
@@ -118,6 +122,6 @@ Después se revisó la base en `/h2-console`.
 ## 6. Pendiente
 
 - A4 y A5.
-- Actualizar `PENDIENTE.txt`, `COMO_EJECUTAR.txt` y `CONTEXTO_IA.md`: todavía dicen que las
+- Actualizar `../PENDIENTE.txt`, `COMO_EJECUTAR.txt` y `CONTEXTO_IA.md`: todavía dicen que las
   opciones 2 a 4 no están implementadas.
 - Decidir con la tutora si la extensión se dibuja en el EA (fragmento `alt`).

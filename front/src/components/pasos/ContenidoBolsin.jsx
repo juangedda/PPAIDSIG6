@@ -36,8 +36,8 @@ export default function ContenidoBolsin({ nroPrecinto, remitos, onContinuar }) {
             </Stack>
             <Divider />
             <Stack divider={<Divider flexItem />}>
-              {r.documentacion.map((d) => (
-                <Stack key={d.nroDocumentacion} direction="row" spacing={1.5} alignItems="flex-start" sx={{ px: 2, py: 1.5 }}>
+              {r.documentacion.map((d, i) => (
+                <Stack key={i} direction="row" spacing={1.5} alignItems="flex-start" sx={{ px: 2, py: 1.5 }}>
                   <DescriptionOutlinedIcon fontSize="small" sx={{ color: 'text.secondary', mt: 0.25 }} />
                   <DatosDocumento documento={d} />
                 </Stack>
